@@ -32,7 +32,23 @@ describe Rackson::ObjectMapper do
     end
 
     it 'understands optional properties' do
+      expect(deserialized.something_optional).to be nil
+      with_optional = mapper.deserialize '{"foo": "bar", "bar": {"baz":"another thing"}, "something_optional": "this now exists"}', FakeObject
+      expect(with_optional.something_optional).to eq 'this now exists'
+    end
 
+    it 'exposes type mismatches' do
+      expect do
+        # DifferentFakeObject#baz is declared as a String above
+        mapper.deserialize '{ "baz": 1 }', DifferentFakeObject
+      end.to raise_error(/type mismatch between/)
+    end
+
+    it 'yells about missing keys' do
+      expect do
+        # FakeObject also requires `bar`
+        mapper.deserialize '{ "foo": "bar" }', FakeObject
+      end.to raise_error(/missing required key/)
     end
   end
 end
