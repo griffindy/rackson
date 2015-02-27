@@ -6,6 +6,8 @@ describe Rackson::ObjectMapper do
   class DifferentFakeObject
     include Rackson
     json_property :baz, String
+
+    attr_writer :baz
   end
 
   class FakeObject
@@ -59,6 +61,13 @@ describe Rackson::ObjectMapper do
       expect(deserialized).to be_a Array
       expect(deserialized.length).to eq 1
       expect(deserialized.first.baz).to eq 'foo'
+    end
+  end
+
+  describe '#serialize' do
+    let(:object) { object = DifferentFakeObject.new; object.baz = 'foo'; object }
+    it 'only uses the fields declared as json_properties' do
+      expect(mapper.serialize(object)).to eq '{"baz":"foo"}'
     end
   end
 end

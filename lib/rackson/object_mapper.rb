@@ -13,6 +13,10 @@ module Rackson
       end
     end
 
+    def serialize(input)
+      JSON.dump(input.serializable_hash)
+    end
+
     def deserialize_from_hash(hash, klass)
       klass.new.tap do |instance|
         klass.instance_variable_get(:@json_properties).each do |property|
