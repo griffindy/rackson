@@ -51,4 +51,14 @@ describe Rackson::ObjectMapper do
       end.to raise_error(/missing required key/)
     end
   end
+
+  describe '#deserialize_into_array' do
+    let(:json_string) { '[{ "baz": "foo" }]' }
+    it 'deserializes into an array with #deserialize' do
+      deserialized = mapper.deserialize(json_string, DifferentFakeObject)
+      expect(deserialized).to be_a Array
+      expect(deserialized.length).to eq 1
+      expect(deserialized.first.baz).to eq 'foo'
+    end
+  end
 end

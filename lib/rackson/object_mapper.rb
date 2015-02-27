@@ -2,9 +2,15 @@ require 'json'
 
 module Rackson
   class ObjectMapper
-    def deserialize(string, klass)
-      hash = JSON.parse(string)
-      deserialize_from_hash(hash, klass)
+    def deserialize(input, klass)
+      case input
+      when String
+        deserialize(JSON.parse(input), klass)
+      when Hash
+        deserialize_from_hash(input, klass)
+      when Array
+        deserialize_into_array(input, klass)
+      end
     end
 
     def deserialize_from_hash(hash, klass)
@@ -13,6 +19,12 @@ module Rackson
           value = generate_value property, hash
           instance.instance_variable_set("@#{property.name}", value)
         end
+      end
+    end
+
+    def deserialize_into_array(array, klass)
+      array.map do |value|
+        deserialize(value, klass)
       end
     end
 
