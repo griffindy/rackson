@@ -16,4 +16,12 @@ module Rackson
       end
     end
   end
+
+  def serializable_hash
+    {}.tap do |result|
+      self.class.instance_variable_get(:@json_properties).each do |property|
+        result[property.name] = self.send(property.name)
+      end
+    end
+  end
 end
