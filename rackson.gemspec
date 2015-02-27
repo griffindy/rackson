@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Rackson::VERSION
   spec.authors       = ["Dylan Griffin"]
   spec.email         = ["dgriffin@twitter.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{A library to turn JSON into POROs.}
+  spec.description   = %q{A library to turn JSON into POROs in a somewhat typesafe manner.}
+  spec.homepage      = "https://github.com/griffindy/rackson"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
