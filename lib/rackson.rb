@@ -1,3 +1,4 @@
+require 'rackson/object_mapper'
 require 'rackson/property'
 require 'rackson/version'
 

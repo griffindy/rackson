@@ -52,6 +52,45 @@ describe Rackson::ObjectMapper do
         mapper.deserialize '{ "foo": "bar" }', FakeObject
       end.to raise_error(/missing required key/)
     end
+
+    it 'can use initialize with *args' do
+      klass = Class.new do
+        include Rackson
+        json_property :foo, String
+        def initialize(*args)
+        end
+      end
+
+      deserialized = mapper.deserialize('{ "foo": "foo" }', klass)
+      expect(deserialized.foo).to eq 'foo'
+    end
+
+    it 'can use initialize when all default args' do
+      klass = Class.new do
+        include Rackson
+        json_property :foo, String
+        def initialize(bar = 'bar')
+        end
+      end
+
+      deserialized = mapper.deserialize('{ "foo": "foo" }', klass)
+      expect(deserialized.foo).to eq 'foo'
+    end
+
+    it 'still works when the initializer has required args by using #allocate' do
+      klass = Class.new do
+        include Rackson
+        json_property :foo, String
+        attr_reader :bar
+        def initialize(required)
+          @bar = 'bar'
+        end
+      end
+
+      deserialized = mapper.deserialize('{ "foo": "foo" }', klass)
+      expect(deserialized.foo).to eq 'foo'
+      expect(deserialized.bar).to eq nil
+    end
   end
 
   describe '#deserialize_into_array' do

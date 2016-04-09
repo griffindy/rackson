@@ -36,6 +36,9 @@ mapper = Rackson::ObjectMapper.new
 foo = mapper.deserialize('{ "bar": "value" }', Foo)
 foo.bar
 # 'value'
+
+mapper.serialize(foo)
+# {"bar":"value"}
 ```
 
 As you can see after including `Rackson` the class now has access to a
@@ -71,8 +74,8 @@ class Foo
 end
 
 mapper = Rackson::ObjectMapper.new
-outer = mapper.deserialize('{ "foo": "this is foo" }', Foo)
-# RuntimeError: missing required key bar
+foo = mapper.deserialize('{ "foo": "this is foo" }', Foo)
+# Rackson::DeserializationError: missing required key bar
 ```
 
 However, properties are easily marked as optional:
@@ -85,10 +88,39 @@ class Foo
 end
 
 mapper = Rackson::ObjectMapper.new
-outer = mapper.deserialize('{ "foo": "this is foo" }', Foo)
-outer.bar
+foo = mapper.deserialize('{ "foo": "this is foo" }', Foo)
+foo.bar
 # nil
 ```
+
+### Initializers
+You may have noticed that none of the example classes defined `#initialize`, so
+rackson could just call `Foo.new` with no problems. Rackson prefers you to
+either have no initialize method, or define one with all optional arguments,
+though it can deal with classes otherwise by not calling the initializer:
+
+
+```ruby
+class Foo
+  include Rackson
+  json_property :foo, String
+  attr_reader :bar
+
+  def initialize(required)
+    @bar = 'bar'
+  end
+end
+
+foo = mapper.deserialize '{ "foo": "this is foo" }', Foo
+foo.foo
+# "this is foo"
+foo.bar
+# nil
+```
+
+Rackson has skipped calling `#initialize`, instead using `Object#allocate`. This
+seems kind of hacky to me, and I may consider adding an optional log warning, or
+removing the feature entirely. Nevertheless it works for now.
 
 
 ## Contributing
